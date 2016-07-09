@@ -29,6 +29,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.0.0'
 }
 
+task runAndroidTests(type: GradleBuild) {
+    tasks = [":app:connectedCheck"]
+}
+
 task startTestStop(dependsOn: ":backend:appengineRun") {
     evaluationDependsOn ":backend"
 
@@ -39,6 +43,7 @@ task startTestStop(dependsOn: ":backend:appengineRun") {
     }
 
     doLast {
+        runAndroidTests.execute();
         println "****DRUM ROLL****"
         println "All done!"
     }
