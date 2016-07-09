@@ -27,5 +27,22 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':javalibrary')
     compile 'com.android.support:appcompat-v7:24.0.0'
-    compile 'com.jakewharton:butterknife:8.1.0'
 }
+
+task startTestStop(dependsOn: ":backend:appengineRun") {
+    evaluationDependsOn ":backend"
+
+    project(":backend") {
+        appengine {
+            daemon true
+        }
+    }
+
+    doLast {
+        println "****DRUM ROLL****"
+        println "All done!"
+    }
+
+    finalizedBy ":backend:appengineStop"
+}
+
