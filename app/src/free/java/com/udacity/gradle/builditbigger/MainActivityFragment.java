@@ -6,12 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 
 public class MainActivityFragment extends Fragment {
+    private ProgressBar progressBar;
 
     public MainActivityFragment() {
     }
@@ -22,6 +24,7 @@ public class MainActivityFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
 
         final Button jokeButton = (Button)root.findViewById(R.id.btn_joke);
+        progressBar = (ProgressBar)root.findViewById(R.id.progressBar);
         AdView mAdView = (AdView) root.findViewById(R.id.adView);
         // Create an ad request. Check logcat output for the hashed device ID to
         // get test ads on a physical device. e.g.
@@ -34,8 +37,8 @@ public class MainActivityFragment extends Fragment {
         jokeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                new EndpointsAsyncTask(getActivity().getApplicationContext()).execute();
+                progressBar.setVisibility(View.VISIBLE);
+                new EndpointsAsyncTask(getActivity().getApplicationContext(), progressBar).execute();
 //                Intent intent = new Intent(getContext(), JokeDisplayActivity.class);
 //                intent.putExtra("joke", EndpointsAsyncTask.finalResult);
 //                startActivity(intent);

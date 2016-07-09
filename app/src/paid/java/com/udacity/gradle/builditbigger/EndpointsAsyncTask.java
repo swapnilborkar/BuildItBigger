@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.util.Pair;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.swapnil.myapplication.backend.jokeApi.JokeApi;
 import com.example.swapnil.myapplication.backend.jokeApi.model.JokeBean;
@@ -17,12 +19,22 @@ public class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, S
     private static JokeApi mJokeApi = null;
     private Context mContext;
     private String mResult;
+    private ProgressBar mProgressBar;
 
 
-    public EndpointsAsyncTask(Context context) {
+    public EndpointsAsyncTask(Context context, ProgressBar progressBar) {
         this.mContext = context;
+        this.mProgressBar = progressBar;
     }
 
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        if (mProgressBar != null) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+    }
 
     @SafeVarargs
     @Override
@@ -46,6 +58,7 @@ public class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, S
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
         mResult = result;
+        mProgressBar.setVisibility(View.GONE);
         startJokeDisplayActivity();
     }
 

@@ -6,9 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 
 public class MainActivityFragment extends Fragment {
+
+    private ProgressBar progressBar;
 
     public MainActivityFragment() {
     }
@@ -19,13 +22,15 @@ public class MainActivityFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
 
         final Button jokeButton = (Button) root.findViewById(R.id.btn_joke);
+        progressBar = (ProgressBar) root.findViewById(R.id.progressBar);
 
 
         jokeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                new EndpointsAsyncTask(getActivity().getApplicationContext()).execute();
+                progressBar.setVisibility(View.VISIBLE);
+                new EndpointsAsyncTask(getActivity().getApplicationContext(), progressBar).execute();
 //
             }
         });

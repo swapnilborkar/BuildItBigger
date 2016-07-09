@@ -4,9 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.util.Pair;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.swapnil.myapplication.backend.jokeApi.JokeApi;
 import com.example.swapnil.myapplication.backend.jokeApi.model.JokeBean;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.swapnilborkar.androidlibrary.JokeDisplayActivity;
@@ -17,13 +22,23 @@ import java.io.IOException;
 public class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
     private static JokeApi mJokeApi = null;
     private Context mContext;
+    private ProgressBar mProgressBar;
     private String mResult;
+    private InterstitialAd mInterstitialAd;
 
 
-    public EndpointsAsyncTask(Context context) {
+    public EndpointsAsyncTask(Context context, ProgressBar progressBar) {
         this.mContext = context;
+        this.mProgressBar = progressBar;
     }
 
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        if (mProgressBar != null) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+    }
 
     @SafeVarargs
     @Override
@@ -47,7 +62,43 @@ public class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, S
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
         mResult = result;
-        startJokeDisplayActivity();
+        //startJokeDisplayActivity();
+
+        // Setting the interstitial ad
+        mInterstitialAd = new InterstitialAd(mContext);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                if (mProgressBar != null) {
+                    mProgressBar.setVisibility(View.GONE);
+                }
+                mInterstitialAd.show();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                super.onAdFailedToLoad(errorCode);
+                if (mProgressBar != null) {
+                    mProgressBar.setVisibility(View.GONE);
+                }
+                startJokeDisplayActivity();
+            }
+
+            @Override
+            public void onAdClosed() {
+                startJokeDisplayActivity();
+            }
+        });
+
+        AdRequest ar = new AdRequest
+                .Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice("XXXXXXXXXXXXXXXXXXXXXXXXX")
+                .build();
+        mInterstitialAd.loadAd(ar);
+
     }
 
     private void startJokeDisplayActivity() {
